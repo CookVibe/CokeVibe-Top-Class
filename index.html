@@ -1,943 +1,650 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CookVibe™ Demo</title>
-  <meta name="robots" content="noindex, nofollow"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CookVibe • Stage 1 Demo</title>
 
-  <style>
-    *{box-sizing:border-box;font-family:Arial,sans-serif}
-    body{margin:0;background:#0f172a;color:#fff}
-    .container{max-width:1050px;margin:auto;padding:20px}
-    header{text-align:center;margin-bottom:18px}
-    .subtitle{color:#94a3b8;margin-top:6px}
-    h1,h2,h3{margin:0 0 10px 0}
-    h4{margin:0 0 8px 0}
-    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:none;margin-bottom:10px}
-    textarea{min-height:88px}
-    button{padding:10px 16px;border-radius:999px;border:none;background:#22c55e;color:#000;font-weight:800;cursor:pointer}
-    button:hover{opacity:.92}
-    button.secondary{background:#fbbf24;color:#000}
-    button.ghost{background:transparent;color:#fff;border:1px solid #334155}
-    button.disabled{opacity:.45;cursor:not-allowed}
-    .error{color:#f87171;margin:8px 0 0 0}
-    .hidden{display:none}
-    .nav{display:flex;justify-content:space-between;align-items:center;margin:14px 0 14px 0}
-    .badge{background:#334155;padding:4px 10px;border-radius:12px;font-size:12px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-    .card{background:#1e293b;padding:16px;border-radius:18px;border:1px solid #334155}
-    .muted{color:#94a3b8}
-    .tiny{color:#94a3b8;font-size:12px;line-height:1.35}
-    hr{border:none;border-top:1px solid #334155;margin:14px 0}
+<!-- Cache-busting hints (best-effort) -->
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 
-    .pill{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900;letter-spacing:.4px}
-    .pill[data-state="available"]{background:#22c55e;color:#000}
-    .pill[data-state="unavailable"]{background:#f87171;color:#000}
-
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .votes{display:flex;gap:10px;align-items:center;justify-content:space-between}
-    .voteBtn{padding:8px 12px;border-radius:999px;border:1px solid #334155;background:transparent;color:#fff;font-weight:800}
-    .voteBtn:hover{opacity:.9}
-
-    /* Modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:18px;z-index:999}
-    .modalCard{background:#0b1224;border:1px solid #334155;border-radius:16px;max-width:600px;width:100%;padding:16px}
-    .modalHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}
-
-    /* Netlify Forms: keep hidden but present */
-    form[netlify]{display:none}
-  </style>
+<style>
+:root{
+  --bg:#0b0f0e;
+  --card:#121816;
+  --text:#f1f5f4;
+  --muted:#9fb0aa;
+  --green:#1fbf7a;
+  --gold:#d9b75f;
+  --line:#24322d;
+  --ok:#35d07f;
+  --bad:#ff5a5f;
+  --shadow: 0 10px 28px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(800px 520px at 10% 0%, rgba(31,191,122,.18), transparent 60%),
+    radial-gradient(720px 420px at 90% 0%, rgba(217,183,95,.16), transparent 60%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:var(--gold);text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 14px 40px}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{
+  background:rgba(18,24,22,.95);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow: var(--shadow);
+}
+header.card{
+  position:sticky;top:0;z-index:10;
+  backdrop-filter: blur(10px);
+}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.small{font-size:12px;color:var(--muted);line-height:1.45}
+.ok{color:var(--ok);font-weight:900}
+.bad{color:var(--bad);font-weight:900}
+.hidden{display:none !important}
+.divider{height:1px;background:var(--line);margin:14px 0}
+input,textarea,button{font:inherit}
+input[type="text"], textarea{
+  width:100%;
+  background:#0f1412;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 12px;
+  outline:none;
+}
+textarea{min-height:110px;resize:vertical}
+button{
+  border:0;border-radius:12px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:950;
+  background:linear-gradient(135deg,var(--green),var(--gold));
+  color:#0b0f0e;
+  box-shadow:0 10px 18px rgba(0,0,0,.25);
+}
+button.secondary{
+  background:#0f1412;
+  color:var(--text);
+  border:1px solid var(--line);
+  box-shadow:none;
+  font-weight:850;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#0f1412;
+  font-size:12px;
+  font-weight:950;
+}
+.badge.gold{
+  background:rgba(217,183,95,.14);
+  border-color:rgba(217,183,95,.45);
+}
+.toast{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0f1412;
+}
+.logoWrap{display:flex;align-items:center;gap:12px}
+.logo{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,var(--green),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  color:#0b0f0e;font-weight:1000;letter-spacing:.5px;
+}
+video{width:100%;border-radius:10px;background:#000;margin-top:10px}
+.pill{
+  font-size:12px;color:#0b0f0e;background:linear-gradient(135deg,var(--green),var(--gold));
+  padding:7px 10px;border-radius:999px;font-weight:1000;
+}
+.kv{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+hr{border:0;height:1px;background:var(--line);margin:12px 0}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <header>
-      <h1>CookVibe™ Demo</h1>
-      <p class="subtitle">Private beta demo (User view + Creator view)</p>
-    </header>
-<!-- SAFETY: Buttons / Links -->
-<div class="card" style="margin-top:14px;">
-  <h3>Safety & Community</h3>
-  <p class="tiny">CookVibe blocks prohibited content and reviews reports quickly. Lives are moderated and can be ended instantly for safety.</p>
+<div class="wrap">
+
+<header class="card row" style="justify-content:space-between">
+  <div class="logoWrap">
+    <div class="logo" aria-label="CookVibe logo">CV</div>
+    <div>
+      <div style="font-weight:1000;font-size:16px;letter-spacing:.2px">CookVibe</div>
+      <div class="small">Stage 1 Demo • Green & Gold</div>
+    </div>
+  </div>
   <div class="row">
-    <button class="ghost" id="openGuidelinesBtn">Community Guidelines</button>
-    <button class="ghost" id="openSafetyCenterBtn">Safety Center</button>
+    <span id="buildPill" class="badge">Build v1.1 • <span id="buildTime"></span></span>
+    <span id="rolePill" class="badge">Not logged in</span>
+    <span class="pill">EARLY ACCESS</span>
+  </div>
+</header>
+
+<!-- Demo Notice -->
+<div class="card" id="demoNotice">
+  <strong>⚠ Demo Notice</strong>
+  <div class="small" style="margin-top:8px">
+    • This is a Stage 1 demo. Video <strong>previews play immediately</strong> after upload.<br>
+    • After refresh, preview playback disappears (no cloud storage yet). That arrives in <strong>Stage 2</strong>.<br>
+    • If the page looks “old” after an update: open in a <strong>Private tab</strong> or add <strong>?v=2</strong> to the URL and reload.
+  </div>
+
+  <!-- ✅ NEW: Walkthrough button (works once the PDF is in your repo root) -->
+  <div class="row" style="margin-top:12px">
+    <button type="button" onclick="openWalkthrough()">View Full Platform Walkthrough (PDF)</button>
+    <button class="secondary" type="button" onclick="toast('Tip: Upload CookVibe_Full_Platform_Walkthrough.pdf to your GitHub repo (same folder as index.html), commit, then this button will open it.')">How to enable</button>
+  </div>
+  <div class="small" style="opacity:.85;margin-top:8px">
+    Button opens: <strong id="walkthroughPathLabel"></strong>
   </div>
 </div>
 
-<!-- SAFETY: Demo Upload Gate -->
-<div class="card" style="margin-top:14px;">
-  <h3>Upload Video (Demo)</h3>
-  <p class="tiny">Uploads are disabled in the web demo, but this shows the real safety gate creators will use.</p>
+<div class="grid">
 
-  <label class="tiny" style="display:block;margin-bottom:6px;">Content type</label>
-  <select id="demoUploadType">
-    <option value="video">Cooking video</option>
-    <option value="live">Live stream</option>
-  </select>
+  <!-- LEFT COLUMN -->
+  <div>
 
-  <label class="tiny" style="display:block;margin-bottom:6px;">Confirmations</label>
-  <div class="tiny" style="line-height:1.6;">
-    <label><input type="checkbox" id="chk18"/> I confirm I am 18+ (required to upload/go live)</label><br/>
-    <label><input type="checkbox" id="chkGuidelines"/> I agree to CookVibe Community Guidelines</label><br/>
-    <label><input type="checkbox" id="chkNoProhibited"/> My content contains no nudity, hate, harassment, graphic violence, or illegal sales</label>
+    <div class="card">
+      <h3 style="margin:0 0 10px 0">Access</h3>
+      <p class="small" style="margin:0 0 10px 0">Enter an access code to view the demo.</p>
+
+      <div class="row">
+        <input id="accessCode" type="text" placeholder="USERBETA / CREATORBETA / FOUNDING20" />
+        <button onclick="login()">Enter</button>
+        <button class="secondary" onclick="logout()">Reset</button>
+      </div>
+
+      <div id="loginMsg" class="toast small hidden"></div>
+
+      <div class="kv">
+        <span id="userBadge" class="badge hidden">👤 User Access</span>
+        <span id="creatorBadge" class="badge hidden">🎬 Creator Access</span>
+        <span id="foundingBadge" class="badge gold hidden">⭐ Founding Creator</span>
+      </div>
+
+      <div id="foundingExplainer" class="toast small hidden">
+        <div><strong>Founding Creator Benefit:</strong> Lifetime free creator subscription once CookVibe officially launches.</div>
+        <div class="small" style="margin-top:6px">Demo note: enforced in Stage 2 when accounts/subscriptions go live.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Demo Home</h3>
+      <p class="small" style="margin:0 0 10px 0">
+        No extra pages, no routes, no 404s. Buttons are demo-only.
+      </p>
+      <div class="row">
+        <button class="secondary" type="button" onclick="toast('Follow (demo): In Stage 2 this will follow creators and notify users of new videos.')">Follow Creator (demo)</button>
+        <button class="secondary" type="button" onclick="toast('Share (demo): In Stage 2 this will share a creator profile or recipe link.')">Share (demo)</button>
+        <button class="secondary" type="button" onclick="toast('Live (demo): Live streaming launches later. Stage 2 focuses on persistent uploads + profiles + moderation.')">Live (demo)</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="secondary" type="button" onclick="openWalkthrough()">View Full Platform Walkthrough (PDF)</button>
+      </div>
+    </div>
+
+    <!-- CREATOR AREA -->
+    <div id="creatorArea" class="hidden">
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">Creator Profile Preview</h3>
+        <p class="small" style="margin:0">This is a preview layout. Real profile pages arrive in Stage 2.</p>
+        <hr>
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div style="font-weight:1000">Creator Name (demo)</div>
+            <div class="small">Intro video • Cooking videos • Recipe Rolodex</div>
+          </div>
+          <button class="secondary" type="button" onclick="toast('Follow (demo) captured. Stage 2 will make this functional.')">Follow (demo)</button>
+        </div>
+        <div id="profileIntroSlot" class="toast small" style="margin-top:10px">
+          Intro video slot: <span class="bad">none yet</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">Creator Introduction Video</h3>
+        <p class="small" style="margin:0 0 8px 0">Upload a short intro video (appears above your cooking videos + recipe Rolodex).</p>
+
+        <p id="introStatus" class="small" style="margin:0 0 10px 0">No intro video received yet.</p>
+
+        <input type="file" id="introFile" accept="video/*" />
+        <div class="row" style="margin-top:10px">
+          <button onclick="saveIntro()">Save Intro Video</button>
+          <button id="replaceBtn" class="secondary hidden" type="button" onclick="replaceIntro()">Replace</button>
+        </div>
+
+        <div id="introUploadStatus" class="toast small hidden"></div>
+
+        <video id="introPreview" class="hidden" controls></video>
+
+        <p id="demoNote" class="small hidden" style="opacity:.80;margin-top:8px">
+          Demo note: preview plays immediately after upload. After refresh the preview disappears (no cloud storage yet). Stage 2 adds permanent playback.
+        </p>
+
+        <p id="introMeta" class="small hidden" style="opacity:.90;margin-top:6px"></p>
+
+        <p class="small" style="opacity:.80;margin-top:10px">
+          Supported: MP4/MOV/WebM • Recommended under 60 seconds • Max size: <strong>50MB</strong>
+        </p>
+
+        <div id="introProof" class="toast small hidden">
+          <strong>Saved proof (demo)</strong><br/>
+          <span id="introProofName"></span>
+        </div>
+      </div>
+
+      <div class="card" id="creatorSuggestionsCard">
+        <h3 style="margin:0 0 8px 0">Creator Suggestions (Creators Only)</h3>
+        <p class="small" style="margin:0 0 10px 0">Users cannot see this. Share what would help creators grow.</p>
+        <textarea id="suggestionText" placeholder="Your suggestion..."></textarea>
+        <div class="row" style="margin-top:10px">
+          <button onclick="sendSuggestion()">Submit Suggestion</button>
+        </div>
+        <div id="suggestionMsg" class="toast small hidden"></div>
+      </div>
+
+      <div class="card" id="bugCard">
+        <h3 style="margin:0 0 8px 0">Bug Report (Creators Only)</h3>
+        <p class="small" style="margin:0 0 10px 0">Stage 1 stores reports on this device only (Stage 2 routes them to the platform).</p>
+        <textarea id="bugText" placeholder="What were you trying to do? What happened? Device/browser?"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button onclick="reportBug()">Report Bug</button>
+          <button class="secondary" type="button" onclick="copyBugTemplate()">Copy Template</button>
+        </div>
+        <div id="bugMsg" class="toast small hidden"></div>
+      </div>
+
+    </div><!-- /creatorArea -->
+
   </div>
 
-  <div class="row" style="margin-top:10px;">
-    <button id="demoUploadBtn">Continue</button>
-    <button class="secondary" id="demoLiveBtn">Go Live (Demo)</button>
-  </div>
+  <!-- RIGHT COLUMN -->
+  <div>
 
-  <p class="tiny" id="demoUploadMsg" style="margin-top:10px;"></p>
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Feedback</h3>
+      <p class="small" style="margin:0 0 10px 0">Be direct—what works, what’s confusing, what’s missing?</p>
+      <textarea id="feedbackText" placeholder="Type feedback here..."></textarea>
+      <div class="row" style="margin-top:10px">
+        <button onclick="sendFeedback()">Send Feedback</button>
+        <button class="secondary" type="button" onclick="copyFeedbackTemplate()">Copy Template</button>
+      </div>
+      <div id="feedbackMsg" class="toast small hidden"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Roadmap</h3>
+      <ul class="small" style="margin:0 0 0 18px;padding:0">
+        <li><strong>Stage 1:</strong> Demo testing (current)</li>
+        <li><strong>Stage 2:</strong> Persistent uploads, creator pages, moderation</li>
+        <li><strong>Stage 3:</strong> Subscriptions, payouts, live streaming</li>
+      </ul>
+      <div class="row" style="margin-top:10px">
+        <button class="secondary" type="button" onclick="openWalkthrough()">View Full Platform Walkthrough (PDF)</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Support</h3>
+      <p class="small" style="margin:0">
+        Contact: <strong>hello@cookvibe.co</strong><br/>
+        Operated by <strong>The Start UPZ, LLC</strong>
+      </p>
+    </div>
+
+  </div>
 </div>
 
-<!-- SAFETY: Report Button Example -->
-<div class="card" style="margin-top:14px;">
-  <h3>Content Actions (Example)</h3>
-  <p class="tiny">Every video/live will include a Report button.</p>
-  <div class="row">
-    <button class="ghost" id="reportContentBtn">Report This Content</button>
-  </div>
 </div>
 
-<!-- MODALS -->
-<div id="guidelinesModal" class="modal hidden">
-  <div class="modalCard">
-    <div class="modalHeader">
-      <h3 style="margin:0;">CookVibe Community Guidelines</h3>
-      <button class="ghost" id="closeGuidelinesBtn">✕</button>
-    </div>
-    <p class="tiny" style="margin-top:10px;">
-      Allowed: cooking, recipes, reviews, healthy lifestyle, education.<br/><br/>
-      Prohibited:
-      • Nudity/sexual content • Content involving minors in sexual context (instant ban)
-      • Hate speech/extremism • Graphic violence
-      • Harassment/threats/doxxing • Illegal sales (drugs/weapons)
-      • Self-harm promotion • Scams/spam
-    </p>
-    <p class="tiny"><b>Enforcement:</b> content removal, strikes, suspensions, bans. Lives may be ended immediately for safety.</p>
-  </div>
-</div>
-
-<div id="safetyCenterModal" class="modal hidden">
-  <div class="modalCard">
-    <div class="modalHeader">
-      <h3 style="margin:0;">Safety Center</h3>
-      <button class="ghost" id="closeSafetyCenterBtn">✕</button>
-    </div>
-    <p class="tiny" style="margin-top:10px;">
-      • Uploads are scanned before publishing.<br/>
-      • Reports are reviewed quickly and logged.<br/>
-      • Live streams run with a safety delay and can be cut instantly.<br/>
-      • Appeals are available for mistaken removals.
-    </p>
-  </div>
-</div>
-
-<div id="reportModal" class="modal hidden">
-  <div class="modalCard">
-    <div class="modalHeader">
-      <h3 style="margin:0;">Report Content</h3>
-      <button class="ghost" id="closeReportBtn">✕</button>
-    </div>
-
-    <label class="tiny" style="display:block;margin-top:10px;">Reason</label>
-    <select id="reportReason">
-      <option value="nudity">Nudity / sexual content</option>
-      <option value="hate">Hate speech / extremist content</option>
-      <option value="harassment">Harassment / threats</option>
-      <option value="violence">Graphic violence</option>
-      <option value="illegal">Illegal sales (drugs/weapons)</option>
-      <option value="selfharm">Self-harm</option>
-      <option value="other">Other</option>
-    </select>
-
-    <label class="tiny" style="display:block;">Details (optional)</label>
-    <textarea id="reportDetails" placeholder="What happened?"></textarea>
-
-    <div class="row">
-      <button id="submitReportBtn">Submit Report</button>
-    </div>
-
-    <p class="tiny" id="reportMsg" style="margin-top:10px;"></p>
-  </div>
-</div>
-
-<!-- OPTIONAL: Netlify form capture for reports (works only on Netlify) -->
-<form name="cookvibe-reports" method="POST" data-netlify="true" netlify style="display:none;">
-  <input type="hidden" name="form-name" value="cookvibe-reports" />
-  <input type="text" name="content_id" />
-  <input type="text" name="reason" />
-  <textarea name="details"></textarea>
-  <input type="text" name="role" />
-</form>
-    <!-- ACCESS -->
-    <section id="access" class="card">
-      <h2 style="margin:0 0 6px 0;">Enter Access Code</h2>
-      <p class="muted" style="margin:0 0 10px 0;">
-        Use a code provided by the team. Creator codes unlock creator-only tools.
-      </p>
-      <input id="codeInput" placeholder="Enter access code"/>
-      <button id="enterBtn">Enter Demo</button>
-      <p id="error" class="error"></p>
-
-      <div class="row" style="margin-top:10px;">
-        <span class="badge">User codes</span>
-        <span class="tiny">USERBETA, COOKVIBEUSER</span>
-      </div>
-      <div class="row" style="margin-top:8px;">
-        <span class="badge">Creator codes</span>
-        <span class="tiny">CREATORBETA, SHAUNCREATOR</span>
-      </div>
-
-      <p class="tiny" style="margin-top:10px;">
-        Tip: When deployed on Netlify, enable Password Protection at the site level for an extra layer of control.
-      </p>
-    </section>
-
-    <!-- DEMO -->
-    <section id="demo" class="hidden">
-      <nav class="nav">
-        <span style="font-weight:900;">🍳 CookVibe</span>
-        <span id="roleBadge" class="badge">ROLE: USER</span>
-      </nav>
-
-      <div class="grid">
-        <div class="card">
-          <h3>Creator Page (Preview)</h3>
-          <p style="margin:0;"><b>Name:</b> Demo Creator</p>
-          <p style="margin:6px 0 0 0;"><b>Country:</b> United States</p>
-          <p style="margin:6px 0 0 0;"><b>Language:</b> English</p>
-
-          <hr/>
-          <p class="muted" style="margin:0;"><b>Follow CTA:</b> Follow for more recipes</p>
-          <button class="secondary" style="margin-top:10px;">➕ Follow Creator</button>
-
-          <p class="tiny" style="margin-top:10px;">
-            Demo note: Mobile app includes TikTok-style feed + live stream. Web demo focuses on flows.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Recipe Vault (Rolodex)</h3>
-          <ul style="margin:0 0 6px 18px;">
-            <li>Spicy Garlic Shrimp</li>
-            <li>Heart-Healthy Bowl</li>
-            <li>Kidney-Friendly Veggie Plate</li>
-          </ul>
-          <p class="tiny">
-            Creators store recipes on their page in a categorized vault. Searchable by all users.
-          </p>
-        </div>
-
-        <!-- ORDER + FALLBACK -->
-        <div class="card">
-          <h3>Order Locally (Referral Model)</h3>
-
-          <div class="row" style="margin-bottom:10px;">
-            <span id="dishStatusPill" class="pill" data-state="available">AVAILABLE</span>
-            <span class="muted">Dish: <b id="dishNameText">Spicy Garlic Shrimp</b></span>
-          </div>
-
-          <p id="dishReasonText" style="color:#fbbf24;margin:0 0 10px 0;"></p>
-
-          <div class="row">
-            <button id="orderBtn">🍽 Order This Dish Near You</button>
-            <button id="fallbackBtn" class="secondary">🔎 Find Similar Nearby</button>
-          </div>
-
-          <p class="tiny" style="margin-top:10px;">
-            Orders are fulfilled by third-party delivery partners. CookVibe does not prepare or deliver food.
-          </p>
-
-          <!-- CREATOR-ONLY CONTROLS (NOT VISIBLE TO USERS) -->
-          <div id="creatorControls" class="hidden">
-            <hr/>
-            <h4>Creator Controls</h4>
-            <label class="tiny" style="display:block;margin-bottom:6px;">Availability</label>
-            <select id="creatorAvail">
-              <option value="available">Available</option>
-              <option value="unavailable">Unavailable</option>
-            </select>
-
-            <label class="tiny" style="display:block;margin-bottom:6px;">Reason (optional)</label>
-            <input id="creatorReason" placeholder="Sold out / Not delivering / Not available today"/>
-
-            <button id="creatorApply" class="ghost">Apply</button>
-
-            <p class="tiny" style="margin-top:10px;">
-              Creator tools appear only in creator mode. Users never see these controls.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Leaderboard (Preview)</h3>
-          <ol style="margin:0 0 6px 18px;">
-            <li>🇺🇸 Top Creator — Free Annual Next Year</li>
-            <li>🇺🇸 Runner Up — 50% Off Next Year</li>
-            <li>🇺🇸 3rd Place — 25% Off Next Year</li>
-          </ol>
-          <p class="tiny">Rewards apply per country. Top creators in each country receive annual rewards.</p>
-        </div>
-
-        <div class="card">
-          <h3>Feedback (All Users)</h3>
-          <textarea id="feedbackText" placeholder="What feels missing, confusing, or exciting?"></textarea>
-          <div class="row">
-            <button id="sendFeedback">Send Feedback</button>
-            <button id="exportAnalytics" class="ghost">Export Analytics</button>
-          </div>
-          <p class="tiny" style="margin-top:10px;">
-            Demo feedback is stored locally + captured in analytics export. In production, it goes to a platform dashboard.
-          </p>
-        </div>
-
-        <!-- CREATOR-ONLY: SUGGESTIONS + VOTING + GROUPING + EMAIL -->
-        <div id="creatorOnlyPanel" class="card hidden">
-          <div class="row" style="justify-content:space-between;">
-            <h3 style="margin:0;">Creator Suggestions (Private)</h3>
-            <span class="badge">CREATORS ONLY</span>
-          </div>
-
-          <p class="tiny" style="margin-top:10px;">
-            This section is invisible to users. Use it to propose features, vote on ideas, and send a summary to the team.
-          </p>
-
-          <hr/>
-
-          <!-- 1) SUGGESTION BOX -->
-          <h4>Submit a Suggestion</h4>
-          <textarea id="creatorSuggestionText" placeholder="What feature would help you earn more or create better content?"></textarea>
-          <div class="row">
-            <button id="sendCreatorSuggestion">Submit Suggestion</button>
-            <button id="emailCreatorSummary" class="ghost">Email Summary</button>
-          </div>
-          <p class="tiny" style="margin-top:10px;">
-            Email uses your device’s mail app (no backend). If deployed on Netlify, we can also capture suggestions via Netlify Forms.
-          </p>
-
-          <hr/>
-
-          <!-- 2) FEATURE VOTING -->
-          <h4>Feature Voting</h4>
-          <p class="tiny" style="margin-top:0;">Vote on what matters most for creators. Top items rise automatically.</p>
-
-          <div id="voteList" style="display:grid;gap:10px;"></div>
-
-          <hr/>
-
-          <!-- 3) TOP REQUESTED + 4) AUTO GROUPING -->
-          <h4>Top Requested + Auto Grouping</h4>
-          <div class="row" style="align-items:flex-start;">
-            <div style="flex:1;min-width:260px;">
-              <p class="tiny" style="margin:0 0 8px 0;"><b>Top Requested (from suggestions + votes)</b></p>
-              <div id="topRequested" class="tiny"></div>
-            </div>
-            <div style="flex:1;min-width:260px;">
-              <p class="tiny" style="margin:0 0 8px 0;"><b>Grouped Themes</b></p>
-              <div id="groupedThemes" class="tiny"></div>
-            </div>
-          </div>
-
-          <p class="tiny" style="margin-top:10px;">
-            Themes are auto-tagged by keywords (Monetization, Editing, Delivery, Translation, Live, Recipes, Analytics, Other).
-          </p>
-        </div>
-      </div>
-
-      <footer style="text-align:center;margin-top:26px;color:#94a3b8">
-        Founded by <b>Shaun Wint</b> • CookVibe™
-      </footer>
-    </section>
-  </div>
-
-  <!-- Order Modal -->
-  <div id="orderModal" class="modal hidden">
-    <div class="modalCard">
-      <div class="modalHeader">
-        <h3 style="margin:0;">Order This Dish Near You</h3>
-        <button id="orderClose" class="ghost">✕</button>
-      </div>
-
-      <p class="muted" style="margin:10px 0 10px 0;">
-        Enter ZIP code or city. We’ll open a delivery partner search.
-      </p>
-
-      <input id="orderLocation" placeholder="ZIP code or city"/>
-      <button id="orderSetLocation">Continue</button>
-
-      <div id="orderPartnerButtons" class="hidden" style="margin-top:12px;">
-        <div class="row">
-          <button id="orderDoorDash">DoorDash</button>
-          <button id="orderUberEats">Uber Eats</button>
-        </div>
-      </div>
-
-      <p class="tiny" style="margin-top:12px;">
-        You’re ordering through a third-party partner. Availability, pricing, and delivery are handled by the provider.
-      </p>
-    </div>
-  </div>
-
-  <!-- Fallback Modal -->
-  <div id="fallbackModal" class="modal hidden">
-    <div class="modalCard">
-      <div class="modalHeader">
-        <h3 style="margin:0;">Find Similar Nearby</h3>
-        <button id="fallbackClose" class="ghost">✕</button>
-      </div>
-
-      <p class="muted" style="margin:10px 0 10px 0;">
-        We’ll search delivery partners first. If needed, you can open a Maps search.
-      </p>
-
-      <input id="fallbackLocation" placeholder="ZIP code or city"/>
-      <button id="fallbackSetLocation">Continue</button>
-
-      <div id="fallbackPartnerButtons" class="hidden" style="margin-top:12px;">
-        <div class="row">
-          <button id="fallbackDoorDash">DoorDash</button>
-          <button id="fallbackUberEats">Uber Eats</button>
-        </div>
-      </div>
-
-      <div id="fallbackMapsButton" class="hidden" style="margin-top:10px;">
-        <button id="fallbackMaps" class="ghost">Open Maps Search</button>
-      </div>
-
-      <p class="tiny" style="margin-top:12px;">
-        Results provided by third parties. CookVibe does not prepare or deliver food.
-      </p>
-    </div>
-  </div>
-
-  <!-- OPTIONAL: Netlify Forms capture (works only when deployed on Netlify) -->
-  <form name="creator-suggestions" method="POST" data-netlify="true" netlify>
-    <input type="hidden" name="form-name" value="creator-suggestions" />
-    <input type="text" name="creator_id" />
-    <textarea name="suggestion"></textarea>
-    <textarea name="summary_json"></textarea>
-  </form>
-
-  <script>
-    // ===== Role-based Demo with Creator-only Panels =====
-    const USER_CODES = ["USERBETA", "COOKVIBEUSER"];
-    const CREATOR_CODES = ["CREATORBETA", "SHAUNCREATOR"];
-
-    const CREATOR_ID = "demo_creator_001";
-    const DISH_NAME = "Spicy Garlic Shrimp";
-    const DEFAULT_COUNTRY = "United States";
-
-    function qs(id){ return document.getElementById(id); }
-
-    // ---- Analytics (MVP) ----
-    function getEvents() {
-      try { return JSON.parse(localStorage.getItem("cv_events") || "[]"); }
-      catch { return []; }
-    }
-    function track(event, props = {}) {
-      const payload = { event, props, ts: new Date().toISOString() };
-      const events = getEvents();
-      events.push(payload);
-      localStorage.setItem("cv_events", JSON.stringify(events));
-      console.log("[CookVibe analytics]", payload);
-    }
-    function exportAnalytics() {
-      const blob = new Blob([JSON.stringify(getEvents(), null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "cookvibe_demo_analytics.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
-    // ---- Dish availability (MVP) ----
-    function getDishStatus() { return localStorage.getItem("cv_dish_status") || "available"; }
-    function setDishStatus(status) { localStorage.setItem("cv_dish_status", status); }
-    function getDishReason() { return localStorage.getItem("cv_dish_reason") || ""; }
-    function setDishReason(reason) { localStorage.setItem("cv_dish_reason", reason); }
-
-    // ---- Creator Suggestions + Voting storage ----
-    function getCreatorSuggestions() {
-      try { return JSON.parse(localStorage.getItem("cv_creator_suggestions") || "[]"); }
-      catch { return []; }
-    }
-    function saveCreatorSuggestions(list) {
-      localStorage.setItem("cv_creator_suggestions", JSON.stringify(list));
-    }
-
-    function getVoteState() {
-      try { return JSON.parse(localStorage.getItem("cv_feature_votes") || "{}"); }
-      catch { return {}; }
-    }
-    function saveVoteState(v) {
-      localStorage.setItem("cv_feature_votes", JSON.stringify(v));
-    }
-
-    // ---- Modals ----
-    function openModal(id){ qs(id).classList.remove("hidden"); }
-    function closeModal(id){ qs(id).classList.add("hidden"); }
-
-    // ---- Partner URLs (placeholders) ----
-    function partnerSearchUrl(partner, query, location) {
-      const q = encodeURIComponent(`${query} ${location}`.trim());
-      if (partner === "doordash") return `https://www.doordash.com/search/store/${q}/`;
-      if (partner === "ubereats")  return `https://www.ubereats.com/search?q=${q}`;
-      return "#";
-    }
-    function mapsSearchUrl(query, location) {
-      const q = encodeURIComponent(`${query} near ${location}`.trim());
-      return `https://maps.apple.com/?q=${q}`;
-    }
-
-    // ---- Role control ----
-    let ROLE = "USER"; // USER or CREATOR
-
-    function setRole(newRole) {
-      ROLE = newRole;
-      qs("roleBadge").textContent = `ROLE: ${ROLE}`;
-      // Creator-only panels
-      if (ROLE === "CREATOR") {
-        qs("creatorOnlyPanel").classList.remove("hidden");
-        qs("creatorControls").classList.remove("hidden");
-      } else {
-        qs("creatorOnlyPanel").classList.add("hidden");
-        qs("creatorControls").classList.add("hidden");
-      }
-      track("role_set", { role: ROLE });
-      // Render creator-only content if applicable
-      if (ROLE === "CREATOR") {
-        renderVoteList();
-        renderTopAndGroups();
-      }
-    }
-
-    // ---- Render order section ----
-    function renderOrderSection() {
-      const status = getDishStatus();
-      const reason = getDishReason();
-
-      const orderBtn = qs("orderBtn");
-      const statusPill = qs("dishStatusPill");
-      const reasonText = qs("dishReasonText");
-
-      qs("dishNameText").textContent = DISH_NAME;
-
-      if (status === "available") {
-        statusPill.textContent = "AVAILABLE";
-        statusPill.dataset.state = "available";
-        reasonText.textContent = "";
-        orderBtn.disabled = false;
-        orderBtn.classList.remove("disabled");
-      } else {
-        statusPill.textContent = "UNAVAILABLE";
-        statusPill.dataset.state = "unavailable";
-        orderBtn.disabled = true;
-        orderBtn.classList.add("disabled");
-        reasonText.textContent = reason ? `Reason: ${reason}` : "Reason: Unavailable";
-        track("order_unavailable_shown", { creator_id: CREATOR_ID, dish: DISH_NAME, reason: reason || "unavailable" });
-      }
-    }
-
-    // ---- Access ----
-    function enterDemo(){
-      const code = qs("codeInput").value.trim().toUpperCase();
-
-      if (CREATOR_CODES.includes(code)) {
-        qs("access").style.display="none";
-        qs("demo").classList.remove("hidden");
-        setRole("CREATOR");
-        track("demo_entered", { role:"CREATOR", creator_id: CREATOR_ID, country: DEFAULT_COUNTRY });
-        renderOrderSection();
-        return;
-      }
-
-      if (USER_CODES.includes(code)) {
-        qs("access").style.display="none";
-        qs("demo").classList.remove("hidden");
-        setRole("USER");
-        track("demo_entered", { role:"USER", country: DEFAULT_COUNTRY });
-        renderOrderSection();
-        return;
-      }
-
-      qs("error").innerText = "Invalid access code.";
-    }
-
-    // ---- Order/Fallback actions ----
-    function openOrderModal() {
-      if (getDishStatus() !== "available") return;
-      track("order_click", { dish: DISH_NAME, role: ROLE });
-      qs("orderPartnerButtons").classList.add("hidden");
-      qs("orderLocation").value = "";
-      openModal("orderModal");
-    }
-    function openFallbackModal() {
-      track("fallback_opened", { dish: DISH_NAME, role: ROLE });
-      qs("fallbackPartnerButtons").classList.add("hidden");
-      qs("fallbackMapsButton").classList.add("hidden");
-      qs("fallbackLocation").value = "";
-      openModal("fallbackModal");
-    }
-
-    function submitLocation(modalType) {
-      const loc = (modalType === "order") ? qs("orderLocation").value.trim() : qs("fallbackLocation").value.trim();
-      if (!loc) { alert("Please enter ZIP code or city."); return; }
-      track("location_entered", { modal: modalType, role: ROLE, location_len: loc.length });
-
-      if (modalType === "order") {
-        qs("orderPartnerButtons").classList.remove("hidden");
-      } else {
-        qs("fallbackPartnerButtons").classList.remove("hidden");
-        qs("fallbackMapsButton").classList.remove("hidden");
-      }
-    }
-
-    function goPartner(partner, modalType) {
-      const loc = (modalType === "order") ? qs("orderLocation").value.trim() : qs("fallbackLocation").value.trim();
-      const url = partnerSearchUrl(partner, DISH_NAME, loc);
-      track("partner_selected", { partner, modal: modalType, role: ROLE, dish: DISH_NAME });
-      window.open(url, "_blank");
-    }
-
-    function goMapsFallback() {
-      const loc = qs("fallbackLocation").value.trim();
-      const url = mapsSearchUrl(DISH_NAME, loc);
-      track("maps_fallback_selected", { role: ROLE, dish: DISH_NAME });
-      window.open(url, "_blank");
-    }
-
-    // ---- Creator availability controls ----
-    function applyCreatorAvailability() {
-      if (ROLE !== "CREATOR") return;
-      const status = qs("creatorAvail").value;
-      const reason = qs("creatorReason").value.trim();
-      setDishStatus(status);
-      setDishReason(reason);
-      track("creator_toggle_availability", { creator_id: CREATOR_ID, dish: DISH_NAME, status, reason });
-      renderOrderSection();
-    }
-
-    // ---- Feedback (all users) ----
-    function sendFeedback() {
-      const text = qs("feedbackText").value.trim();
-      track("feedback_submitted", { role: ROLE, length: text.length });
-      alert("Feedback saved (demo). Thank you!");
-      qs("feedbackText").value = "";
-    }
-
-    // ===== Creator-only Upgrades 1–4 =====
-    // 1) Feature Voting
-    const DEFAULT_FEATURES = [
-      "Better earnings dashboard + payout transparency",
-      "In-app video editor (yearly subscribers)",
-      "Real-time translation subtitles",
-      "Live cooking with paid access (monthly) / free on annual",
-      "Order locally integration + fallback search",
-      "Recipe Vault categories + meal plans",
-      "Creator storefront + merch integration",
-      "Country-based leaderboards + rewards"
-    ];
-
-    function renderVoteList() {
-      if (ROLE !== "CREATOR") return;
-
-      const votes = getVoteState();
-      // Initialize defaults if empty
-      DEFAULT_FEATURES.forEach(f => { if (votes[f] == null) votes[f] = 0; });
-      saveVoteState(votes);
-
-      const list = qs("voteList");
-      list.innerHTML = "";
-
-      // Sort by vote count desc
-      const items = Object.entries(votes).sort((a,b)=>b[1]-a[1]);
-
-      items.forEach(([feature, count]) => {
-        const row = document.createElement("div");
-        row.className = "card";
-        row.style.background = "#0b1224";
-        row.style.borderColor = "#334155";
-        row.style.borderRadius = "14px";
-        row.style.padding = "12px";
-
-        row.innerHTML = `
-          <div class="votes">
-            <div style="flex:1;">
-              <div style="font-weight:800;">${escapeHtml(feature)}</div>
-              <div class="tiny">Votes: <b>${count}</b></div>
-            </div>
-            <button class="voteBtn" data-feature="${escapeAttr(feature)}">▲ Vote</button>
-          </div>
-        `;
-
-        list.appendChild(row);
-      });
-
-      // Attach vote handlers
-      list.querySelectorAll(".voteBtn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const f = btn.getAttribute("data-feature");
-          const v = getVoteState();
-          v[f] = (v[f] || 0) + 1;
-          saveVoteState(v);
-          track("creator_feature_voted", { creator_id: CREATOR_ID, feature: f });
-          renderVoteList();
-          renderTopAndGroups();
-        });
-      });
-    }
-
-    // 2) Top Requested + 3) Auto Grouping
-    function tagSuggestion(text) {
-      const t = (text || "").toLowerCase();
-      const rules = [
-        ["Monetization", ["earn","payout","money","subscription","revenue","split","commission"]],
-        ["Editing", ["edit","editor","trim","effects","music","caption"]],
-        ["Delivery", ["deliver","order","doordash","uber","pickup","local"]],
-        ["Translation", ["translate","subtitle","language","captioning"]],
-        ["Live", ["live","stream","livestream"]],
-        ["Recipes", ["recipe","vault","rolodex","category","meal plan","ingredients"]],
-        ["Analytics", ["analytics","stats","views","conversion","tracking"]],
-      ];
-      for (const [tag, keys] of rules) {
-        if (keys.some(k => t.includes(k))) return tag;
-      }
-      return "Other";
-    }
-
-    function getTopRequestedData() {
-      const suggestions = getCreatorSuggestions();
-      const votes = getVoteState();
-
-      // count suggestion themes
-      const themeCounts = {};
-      suggestions.forEach(s => {
-        const tag = tagSuggestion(s.suggestion);
-        themeCounts[tag] = (themeCounts[tag] || 0) + 1;
-      });
-
-      // combine “top requested” from votes + suggestions
-      const topVotes = Object.entries(votes).sort((a,b)=>b[1]-a[1]).slice(0,5);
-      const topThemes = Object.entries(themeCounts).sort((a,b)=>b[1]-a[1]);
-
-      return { topVotes, topThemes, suggestionsCount: suggestions.length };
-    }
-
-    function renderTopAndGroups() {
-      if (ROLE !== "CREATOR") return;
-
-      const { topVotes, topThemes, suggestionsCount } = getTopRequestedData();
-
-      const topDiv = qs("topRequested");
-      const groupDiv = qs("groupedThemes");
-
-      topDiv.innerHTML = `
-        <div class="badge" style="display:inline-block;margin-bottom:8px;">Suggestions: ${suggestionsCount}</div>
-        ${topVotes.length ? topVotes.map(([f,c],i)=>`<div>• <b>${i+1}.</b> ${escapeHtml(f)} <span class="muted">(votes: ${c})</span></div>`).join("") : "<div class='muted'>No votes yet.</div>"}
-      `;
-
-      groupDiv.innerHTML = topThemes.length
-        ? topThemes.map(([tag,count])=>`<div>• <b>${escapeHtml(tag)}:</b> ${count}</div>`).join("")
-        : "<div class='muted'>No suggestions yet.</div>";
-    }
-
-    // 4) Email Delivery (no backend)
-    function emailCreatorSummary() {
-      if (ROLE !== "CREATOR") return;
-
-      const suggestions = getCreatorSuggestions();
-      const votes = getVoteState();
-      const summary = getTopRequestedData();
-
-      const bodyObj = {
-        creator_id: CREATOR_ID,
-        created_at: new Date().toISOString(),
-        top_votes: summary.topVotes,
-        grouped_themes: summary.topThemes,
-        suggestions: suggestions.slice(-25) // last 25
-      };
-
-      const subject = encodeURIComponent("CookVibe Creator Suggestions Summary (Demo)");
-      const body = encodeURIComponent(JSON.stringify(bodyObj, null, 2));
-
-      // Opens Mail app with content (works on iPhone)
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
-
-      track("creator_summary_emailed", { creator_id: CREATOR_ID, suggestions: suggestions.length });
-    }
-
-    // Submit creator suggestion (creator only) + optional Netlify capture
-    async function submitCreatorSuggestion() {
-      if (ROLE !== "CREATOR") return;
-
-      const text = qs("creatorSuggestionText").value.trim();
-      if (!text) { alert("Please enter a suggestion."); return; }
-
-      const list = getCreatorSuggestions();
-      list.push({ creator_id: CREATOR_ID, suggestion: text, tag: tagSuggestion(text), ts: new Date().toISOString() });
-      saveCreatorSuggestions(list);
-
-      track("creator_suggestion_submitted", { creator_id: CREATOR_ID, length: text.length, tag: tagSuggestion(text) });
-
-      // Optional Netlify Forms capture (works if deployed on Netlify)
-      try {
-        const formData = new URLSearchParams();
-        formData.append("form-name", "creator-suggestions");
-        formData.append("creator_id", CREATOR_ID);
-        formData.append("suggestion", text);
-        formData.append("summary_json", JSON.stringify(getTopRequestedData()));
-
-        // Netlify accepts POST to current path
-        await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: formData.toString()
-        });
-      } catch (e) {
-        // If not on Netlify, ignore—local storage + email still works
-      }
-
-      qs("creatorSuggestionText").value = "";
-      alert("Suggestion saved. Thank you!");
-      renderTopAndGroups();
-    }
-
-    // ---- Utils ----
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-    }
-    function escapeAttr(str){
-      return escapeHtml(str).replaceAll("\n"," ").replaceAll("\r"," ");
-    }
-
-    // ---- Init ----
-    window.addEventListener("DOMContentLoaded", () => {
-      qs("enterBtn").addEventListener("click", enterDemo);
-
-      qs("orderBtn").addEventListener("click", () => {
-        if (getDishStatus() !== "available") return;
-        qs("orderPartnerButtons").classList.add("hidden");
-        qs("orderLocation").value = "";
-        openModal("orderModal");
-      });
-      qs("fallbackBtn").addEventListener("click", () => {
-        qs("fallbackPartnerButtons").classList.add("hidden");
-        qs("fallbackMapsButton").classList.add("hidden");
-        qs("fallbackLocation").value = "";
-        openModal("fallbackModal");
-      });
-
-      qs("orderClose").addEventListener("click", () => closeModal("orderModal"));
-      qs("fallbackClose").addEventListener("click", () => closeModal("fallbackModal"));
-
-      qs("orderSetLocation").addEventListener("click", () => submitLocation("order"));
-      qs("fallbackSetLocation").addEventListener("click", () => submitLocation("fallback"));
-
-      qs("orderDoorDash").addEventListener("click", () => goPartner("doordash", "order"));
-      qs("orderUberEats").addEventListener("click", () => goPartner("ubereats", "order"));
-
-      qs("fallbackDoorDash").addEventListener("click", () => goPartner("doordash", "fallback"));
-      qs("fallbackUberEats").addEventListener("click", () => goPartner("ubereats", "fallback"));
-      qs("fallbackMaps").addEventListener("click", goMapsFallback);
-
-      qs("sendFeedback").addEventListener("click", sendFeedback);
-      qs("exportAnalytics").addEventListener("click", exportAnalytics);
-
-      // Creator-only wires (safe even if hidden)
-      qs("creatorApply").addEventListener("click", applyCreatorAvailability);
-      qs("sendCreatorSuggestion").addEventListener("click", submitCreatorSuggestion);
-      qs("emailCreatorSummary").addEventListener("click", emailCreatorSummary);
-
-      // initial render
-      renderOrderSection();
-    });
-  </script>// ---------- SAFETY UX (Demo) ----------
-function hardOpen(id){
-  const el = document.getElementById(id);
+<script>
+/* =========================
+   CookVibe Stage 1 — v1.1
+   Adds: Walkthrough PDF button (no new pages/routes)
+   ========================= */
+
+const CODES = { USER:"USERBETA", CREATOR:"CREATORBETA", FOUNDING:"FOUNDING20" };
+const LS_ROLE = "cv_role_code";
+const LS_INTRO = "cv_intro_meta";
+const LS_FEEDBACK = "cv_feedback";
+const LS_SUGGEST = "cv_suggestions";
+const LS_BUGS = "cv_bugs";
+
+// ✅ Walkthrough PDF file name (place in SAME folder as index.html in your GitHub repo)
+const WALKTHROUGH_PDF = "CookVibe_Full_Platform_Walkthrough.pdf";
+
+let sessionVideoURL = null;
+function $(id){ return document.getElementById(id); }
+
+(function boot(){
+  setBuildStamp();
+  $("walkthroughPathLabel").textContent = WALKTHROUGH_PDF;
+  applyAccess();
+})();
+
+function setBuildStamp(){
+  const now = new Date();
+  $("buildTime").textContent =
+    now.toLocaleDateString() + " " +
+    now.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+}
+
+function toast(msg){
+  clearMsg("loginMsg");
+  showMsg("loginMsg", msg, true);
+  setTimeout(()=>clearMsg("loginMsg"), 2800);
+}
+
+function showMsg(id, text, ok=true){
+  const el = $(id);
   el.classList.remove("hidden");
+  el.innerHTML = ok ? `<span class="ok">${escapeHtml(text)}</span>` : `<span class="bad">${escapeHtml(text)}</span>`;
 }
-function hardClose(id){
-  const el = document.getElementById(id);
+function clearMsg(id){
+  const el = $(id);
   el.classList.add("hidden");
+  el.innerHTML = "";
 }
 
-// Buttons
-document.getElementById("openGuidelinesBtn")?.addEventListener("click", ()=>hardOpen("guidelinesModal"));
-document.getElementById("closeGuidelinesBtn")?.addEventListener("click", ()=>hardClose("guidelinesModal"));
-document.getElementById("openSafetyCenterBtn")?.addEventListener("click", ()=>hardOpen("safetyCenterModal"));
-document.getElementById("closeSafetyCenterBtn")?.addEventListener("click", ()=>hardClose("safetyCenterModal"));
+// ✅ Walkthrough opener with a quick existence check to avoid confusing 404s
+async function openWalkthrough(){
+  const url = WALKTHROUGH_PDF;
 
-document.getElementById("reportContentBtn")?.addEventListener("click", ()=>hardOpen("reportModal"));
-document.getElementById("closeReportBtn")?.addEventListener("click", ()=>hardClose("reportModal"));
-
-function safetyChecksPassed(){
-  const c18 = document.getElementById("chk18")?.checked;
-  const cG = document.getElementById("chkGuidelines")?.checked;
-  const cP = document.getElementById("chkNoProhibited")?.checked;
-  return !!(c18 && cG && cP);
-}
-
-document.getElementById("demoUploadBtn")?.addEventListener("click", ()=>{
-  const msg = document.getElementById("demoUploadMsg");
-  if (!safetyChecksPassed()){
-    msg.textContent = "Please confirm all safety checkboxes to continue.";
-    msg.style.color = "#fbbf24";
-    return;
-  }
-  msg.textContent = "Demo only: Upload accepted into Safety Review. In the real app, uploads are scanned and quarantined until cleared.";
-  msg.style.color = "#22c55e";
-});
-
-document.getElementById("demoLiveBtn")?.addEventListener("click", ()=>{
-  const msg = document.getElementById("demoUploadMsg");
-  if (!safetyChecksPassed()){
-    msg.textContent = "Please confirm all safety checkboxes before going live.";
-    msg.style.color = "#fbbf24";
-    return;
-  }
-  msg.textContent = "Demo only: Live would start with a safety delay + moderation. A panic button ends the live instantly.";
-  msg.style.color = "#22c55e";
-});
-
-// Report submission (local + optional Netlify)
-document.getElementById("submitReportBtn")?.addEventListener("click", async ()=>{
-  const reason = document.getElementById("reportReason").value;
-  const details = document.getElementById("reportDetails").value.trim();
-  const role = (typeof ROLE !== "undefined") ? ROLE : "UNKNOWN";
-  const contentId = "demo_content_001";
-
-  // Local record (demo)
-  const reports = JSON.parse(localStorage.getItem("cv_reports") || "[]");
-  reports.push({ contentId, reason, details, role, ts: new Date().toISOString() });
-  localStorage.setItem("cv_reports", JSON.stringify(reports));
-
-  // Optional Netlify capture
   try{
-    const formData = new URLSearchParams();
-    formData.append("form-name","cookvibe-reports");
-    formData.append("content_id", contentId);
-    formData.append("reason", reason);
-    formData.append("details", details);
-    formData.append("role", role);
+    const r = await fetch(url, { method:"HEAD", cache:"no-store" });
+    if(!r.ok) throw new Error("missing");
+    window.open(url, "_blank", "noopener,noreferrer");
+    toast("Opening walkthrough PDF…");
+  }catch(e){
+    toast("Walkthrough PDF not found yet. Upload CookVibe_Full_Platform_Walkthrough.pdf to your repo (same folder as index.html), commit, then try again.");
+  }
+}
 
-    await fetch("/", {
-      method:"POST",
-      headers:{ "Content-Type":"application/x-www-form-urlencoded" },
-      body: formData.toString()
-    });
-  } catch(e){
-    // ignore in non-Netlify environments
+/* ---------- Access / role gating ---------- */
+function login(){
+  const raw = ($("accessCode").value || "").trim().toUpperCase();
+  clearMsg("loginMsg");
+
+  if(!raw){ showMsg("loginMsg","Please enter an access code.", false); return; }
+  if(raw !== CODES.USER && raw !== CODES.CREATOR && raw !== CODES.FOUNDING){
+    showMsg("loginMsg","Invalid code. Use USERBETA, CREATORBETA, or FOUNDING20.", false);
+    return;
+  }
+  localStorage.setItem(LS_ROLE, raw);
+  applyAccess();
+  showMsg("loginMsg","Access granted.", true);
+}
+
+function logout(){
+  localStorage.removeItem(LS_ROLE);
+  applyAccess(true);
+  showMsg("loginMsg","Reset complete. You are logged out.", true);
+}
+
+function applyAccess(isLogout=false){
+  const code = localStorage.getItem(LS_ROLE);
+
+  ["userBadge","creatorBadge","foundingBadge","foundingExplainer"].forEach(id => $(id).classList.add("hidden"));
+  $("creatorArea").classList.add("hidden");
+
+  if(isLogout || !code){
+    $("rolePill").textContent = "Not logged in";
+    return;
   }
 
-  document.getElementById("reportMsg").textContent = "Report submitted. Thank you — our team will review.";
-  document.getElementById("reportMsg").style.color = "#22c55e";
-  setTimeout(()=>hardClose("reportModal"), 700);
-});
-</form>
+  if(code === CODES.USER){
+    $("rolePill").textContent = "👤 USER";
+    $("userBadge").classList.remove("hidden");
+  }
+
+  if(code === CODES.CREATOR){
+    $("rolePill").textContent = "🎬 CREATOR";
+    $("creatorBadge").classList.remove("hidden");
+    $("creatorArea").classList.remove("hidden");
+  }
+
+  if(code === CODES.FOUNDING){
+    $("rolePill").textContent = "⭐ FOUNDING CREATOR";
+    $("creatorBadge").classList.remove("hidden");
+    $("foundingBadge").classList.remove("hidden");
+    $("foundingExplainer").classList.remove("hidden");
+    $("creatorArea").classList.remove("hidden");
+  }
+
+  loadIntroStatus();
+}
+
+/* ---------- Intro video demo ---------- */
+function saveIntro(){
+  const input = $("introFile");
+  const f = input.files && input.files[0];
+
+  $("introUploadStatus").classList.add("hidden");
+  $("introProof").classList.add("hidden");
+  $("introMeta").classList.add("hidden");
+  $("introPreview").classList.add("hidden");
+  $("demoNote").classList.add("hidden");
+  $("replaceBtn").classList.add("hidden");
+
+  if(!f){
+    showToastIn("introUploadStatus","Please choose a video file first.", false);
+    return;
+  }
+
+  const MAX = 50 * 1024 * 1024;
+  if(f.size > MAX){
+    showToastIn("introUploadStatus","File too large. Max size is 50MB.", false);
+    input.value = "";
+    return;
+  }
+
+  const okTypes = ["video/mp4","video/quicktime","video/webm"];
+  if(f.type && !okTypes.includes(f.type)){
+    showToastIn("introUploadStatus","Unsupported format. Please upload MP4, MOV, or WebM.", false);
+    input.value = "";
+    return;
+  }
+
+  showToastIn("introUploadStatus","Uploading video…", true);
+
+  setTimeout(() => {
+    const payload = { name:f.name, size:f.size, type:(f.type || "video"), savedAt: Date.now() };
+    localStorage.setItem(LS_INTRO, JSON.stringify(payload));
+
+    if(sessionVideoURL) URL.revokeObjectURL(sessionVideoURL);
+    sessionVideoURL = URL.createObjectURL(f);
+
+    const vid = $("introPreview");
+    vid.src = sessionVideoURL;
+    vid.classList.remove("hidden");
+
+    showToastIn("introUploadStatus","✅ Upload complete — preview ready.", true);
+
+    $("introStatus").innerHTML = `<span class="ok">✅ Intro video received (demo):</span> ${escapeHtml(f.name)}`;
+    $("profileIntroSlot").innerHTML = `Intro video slot: <span class="ok">ready (demo)</span> • ${escapeHtml(f.name)}`;
+
+    const dt = new Date(payload.savedAt);
+    $("introMeta").classList.remove("hidden");
+    $("introMeta").innerHTML = `Uploaded: <strong>${dt.toLocaleString()}</strong> • ${Math.round(payload.size/1024/1024)}MB`;
+
+    $("introProof").classList.remove("hidden");
+    $("introProofName").textContent = `Saved file: ${f.name}`;
+
+    $("replaceBtn").classList.remove("hidden");
+    $("demoNote").classList.remove("hidden");
+
+    input.value = "";
+  }, 650);
+}
+
+function replaceIntro(){
+  localStorage.removeItem(LS_INTRO);
+
+  $("introStatus").textContent = "No intro video received yet.";
+  $("profileIntroSlot").innerHTML = `Intro video slot: <span class="bad">none yet</span>`;
+
+  $("introProof").classList.add("hidden");
+  $("introMeta").classList.add("hidden");
+  $("introUploadStatus").classList.add("hidden");
+  $("demoNote").classList.add("hidden");
+  $("replaceBtn").classList.add("hidden");
+
+  const vid = $("introPreview");
+  vid.classList.add("hidden");
+  vid.removeAttribute("src");
+
+  if(sessionVideoURL){
+    URL.revokeObjectURL(sessionVideoURL);
+    sessionVideoURL = null;
+  }
+
+  $("introFile").click();
+}
+
+function loadIntroStatus(){
+  const raw = localStorage.getItem(LS_INTRO);
+  const vid = $("introPreview");
+
+  vid.classList.add("hidden");
+  vid.removeAttribute("src");
+
+  if(!raw){
+    $("introStatus").textContent = "No intro video received yet.";
+    $("profileIntroSlot").innerHTML = `Intro video slot: <span class="bad">none yet</span>`;
+    $("introProof").classList.add("hidden");
+    $("introMeta").classList.add("hidden");
+    $("replaceBtn").classList.add("hidden");
+    $("demoNote").classList.add("hidden");
+    return;
+  }
+
+  try{
+    const payload = JSON.parse(raw);
+    $("introStatus").innerHTML = `<span class="ok">✅ Intro video received (demo):</span> ${escapeHtml(payload.name)}`;
+    $("profileIntroSlot").innerHTML = `Intro video slot: <span class="ok">ready (demo)</span> • ${escapeHtml(payload.name)}`;
+
+    $("introProof").classList.remove("hidden");
+    $("introProofName").textContent = `Saved file: ${payload.name}`;
+
+    const dt = new Date(payload.savedAt);
+    $("introMeta").classList.remove("hidden");
+    $("introMeta").innerHTML = `Uploaded: <strong>${dt.toLocaleString()}</strong> • ${Math.round(payload.size/1024/1024)}MB`;
+
+    $("replaceBtn").classList.remove("hidden");
+  }catch(e){
+    localStorage.removeItem(LS_INTRO);
+  }
+}
+
+function showToastIn(id, msg, ok=true){
+  const el = $(id);
+  el.classList.remove("hidden");
+  el.innerHTML = ok ? `<span class="ok">${escapeHtml(msg)}</span>` : `<span class="bad">${escapeHtml(msg)}</span>`;
+}
+
+/* ---------- Feedback / Suggestions / Bugs (per-device demo storage) ---------- */
+function sendFeedback(){
+  clearMsg("feedbackMsg");
+  const text = ($("feedbackText").value || "").trim();
+  if(!text){ showMsg("feedbackMsg","Please type feedback before sending.", false); return; }
+  const arr = JSON.parse(localStorage.getItem(LS_FEEDBACK) || "[]");
+  arr.push({ t:Date.now(), text });
+  localStorage.setItem(LS_FEEDBACK, JSON.stringify(arr));
+  $("feedbackText").value = "";
+  showMsg("feedbackMsg","✅ Feedback received. Thank you!", true);
+}
+
+function sendSuggestion(){
+  clearMsg("suggestionMsg");
+  const text = ($("suggestionText").value || "").trim();
+  if(!text){ showMsg("suggestionMsg","Please type a suggestion before submitting.", false); return; }
+  const arr = JSON.parse(localStorage.getItem(LS_SUGGEST) || "[]");
+  arr.push({ t:Date.now(), text });
+  localStorage.setItem(LS_SUGGEST, JSON.stringify(arr));
+  $("suggestionText").value = "";
+  showMsg("suggestionMsg","✅ Suggestion received. Thank you!", true);
+}
+
+function reportBug(){
+  clearMsg("bugMsg");
+  const text = ($("bugText").value || "").trim();
+  if(!text){ showMsg("bugMsg","Please describe the bug before submitting.", false); return; }
+  const arr = JSON.parse(localStorage.getItem(LS_BUGS) || "[]");
+  arr.push({ t:Date.now(), text });
+  localStorage.setItem(LS_BUGS, JSON.stringify(arr));
+  $("bugText").value = "";
+  showMsg("bugMsg","✅ Bug report saved (demo).", true);
+}
+
+function copyBugTemplate(){
+  const tpl =
+`BUG REPORT (CookVibe Stage 1 Demo)
+- What I was trying to do:
+- What happened:
+- Steps to reproduce:
+- Device/Browser:
+- Anything else:`;
+  copyText(tpl);
+  toast("Bug template copied.");
+}
+
+function copyFeedbackTemplate(){
+  const tpl =
+`FEEDBACK (CookVibe Stage 1 Demo)
+- What felt good:
+- What felt confusing:
+- What I expected to happen:
+- One feature I want most:`;
+  copyText(tpl);
+  toast("Feedback template copied.");
+}
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).catch(()=>fallbackCopy(text));
+  }else{
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text){
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly","readonly");
+  ta.style.position = "absolute";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+</script>
 </body>
 </html>
+
